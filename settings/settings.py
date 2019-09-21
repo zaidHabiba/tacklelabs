@@ -47,18 +47,6 @@ from .db_settings import DATABASES
 
 DATABASES = DATABASES
 
-"""
-#Azure settings ===[not work]===
-AZURE_ACCOUNT_NAME = "csb3c2dc4a76525x42b5xa19"
-AZURE_STORAGE_KEY = "S5++mdjWjLcYSLGSEHnPhZXycZYEBYmNFaNdxWtHbzzj+CUIhoRoGd8pBjhmUuqNZI/3ylCarXZUwNXbffxgiQ=="
-AZURE_STORAGE_CONTAINER = "media"
-AZURE_CONTAINER = "media"
-
-DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
-
-MEDIA_URL = 'http://storage.pepperdeck.com/media/'
-"""
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
