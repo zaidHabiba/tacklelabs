@@ -2,11 +2,11 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'bwl!z5k*xwi=e5p!4ss72$m&4(cvbft+5c(afh+u$g#-*=l*et'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
 
 from .applications_settings import INSTALLED_APPS
 from .middleware_settings import MIDDLEWARE
