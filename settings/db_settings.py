@@ -9,13 +9,5 @@ DATABASES_List = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'CONN_MAX_AGE': 500
     }
-    , 'host': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wsgi',
-        'USER': 'ZaidXHub@wsgi',
-        'PASSWORD': 'iwue#$%#%46815*@@FVnwejifnjklfwefwe',
-        'HOST': 'wsgi.mysql.database.azure.com',
-        'PORT': '3306',
-    }
 }
 DATABASES = {'default': DATABASES_List['default']}
