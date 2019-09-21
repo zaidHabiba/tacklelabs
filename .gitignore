@@ -102,3 +102,21 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# pycharm
+.idea/
+
+# migrations
+*/migrations/*
+
+# .media
+media/
+photos/
+
+# .idea
+.idea/.gitignore
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/tacklelabs.iml
+.idea/vcs.xml
