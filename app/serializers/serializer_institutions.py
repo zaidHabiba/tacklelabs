@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from app.models.model_institutions import Institution, InstitutionType
 from app.resources.exceptions import ValidationDataException
-from app.resources.validator import is_name_valid, is_int_valid
+from app.resources.validator import is_name_valid
 
 
 class InstitutionTypeSerializer(serializers.ModelSerializer):

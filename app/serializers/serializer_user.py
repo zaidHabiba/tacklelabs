@@ -12,6 +12,24 @@ class UserTypeSerializer(serializers.ModelSerializer):
         fields = ('id', 'type', 'logo')
 
 
+class DoctorFetchSerializer(serializers.ModelSerializer):
+    type = UserTypeSerializer()
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'phone_number', 'email', 'photo')
+
+
+class PatientFetchSerializer(serializers.ModelSerializer):
+    type = UserTypeSerializer()
+
+    class Meta:
+        model = User
+        fields = (
+        'id', 'first_name', 'second_name', 'middle_name', 'gender', 'last_name', 'phone_number', 'birth_date', 'email',
+        'photo')
+
+
 class UserFetchSerializer(serializers.ModelSerializer):
     type = UserTypeSerializer()
 

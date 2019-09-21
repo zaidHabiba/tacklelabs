@@ -2,26 +2,39 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = 'bwl!z5k*xwi\=e5p!4ss72$m&4(cvbft+5c(afh+u$g#-*\=l*et'
 
-DEBUG = os.environ.get('DEBUG')
+DEBUG = True
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS')
+ALLOWED_HOSTS = []
 
-from .applications_settings import INSTALLED_APPS
-from .middleware_settings import MIDDLEWARE
-from .email_settings import EMAIL_BACKEND, EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT, EMAIL_USE_TLS
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework',
+    'app',
+]
 
-INSTALLED_APPS = INSTALLED_APPS
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
 
-MIDDLEWARE = MIDDLEWARE
-
-EMAIL_BACKEND = EMAIL_BACKEND
-EMAIL_HOST = EMAIL_HOST
-EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
-EMAIL_HOST_USER = EMAIL_HOST_USER
-EMAIL_PORT = EMAIL_PORT
-EMAIL_USE_TLS = EMAIL_USE_TLS
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'zz280129@gmail.com'
+EMAIL_HOST_PASSWORD = 'zaed123456789'
 
 ROOT_URLCONF = 'app.urls'
 
@@ -47,13 +60,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'CONN_MAX_AGE': 500
     }
 }
-
-import dj_database_url
-
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -82,17 +90,5 @@ USE_TZ = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
-MEDIAFILES_STORAGEL = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-MEDIAFILES_DIRS = (
-    os.path.join(BASE_DIR, 'media'),
-)
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
-
-import django_heroku
-
-django_heroku.settings(locals())

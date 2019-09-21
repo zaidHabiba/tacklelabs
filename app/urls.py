@@ -4,7 +4,7 @@ from django.urls import path
 
 from app.controllers.controller_user import user_login, user_logout, user_signup, user_update, user_update_password
 from app.controllers.controller_institutions import create_hospital,create_lab,create_software_company,update_institution,fetch_institution
-from settings import settings
+from settings import local
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,4 +18,4 @@ urlpatterns = [
     path('user/<int:user_id>/create_software_company/', create_software_company),
     path('user/<int:user_id>/update_institution/<int:institution_id>', update_institution),
     path('user/<int:user_id>/fetch_institution/<int:institution_id>', fetch_institution)
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)
