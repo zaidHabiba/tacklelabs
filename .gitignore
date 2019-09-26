@@ -106,9 +106,6 @@ venv.bak/
 # pycharm
 .idea/
 
-# migrations
-*/migrations/*
-
 # .media
 media/
 photos/
@@ -120,3 +117,4 @@ photos/
 .idea/modules.xml
 .idea/tacklelabs.iml
 .idea/vcs.xml
+templates/
