@@ -11,24 +11,31 @@ from app.resources.validator import is_email_valid, is_password_valid, is_date_v
     is_int_valid
 from app.serializers.serializer_user import UserFetchSerializer, UserSerializer
 from django.core.exceptions import ObjectDoesNotExist
-
+from app.resources.values import USER_ID_SESSIONS_KEY
 class UserRegisterCore(viewsets.ViewSet):
 
     @action(methods="post", url_path="user/login/", detail=False)
     @validation_parameters(["email", "password"])
-    @validation_data({"email": is_email_valid, "password": is_password_valid})
     def user_login(self, request, *args, **kwargs):
         request_data = request.data
-        user = User.users.login_user(email=request_data["email"], password=request_data["password"])
-        if user is None:
-            response = Response(error_code=Response.ERROR_605_AUTHENTICATION_FAILED)
-            response.set_msg("Email or password not correct")
-            return response
-        else:
+        session_user_id = request.session.get(USER_ID_SESSIONS_KEY, None)
+        if session_user_id is not None:
+            user = User.users.get(id=session_user_id)
             response = Response(error_code=status.HTTP_200_OK)
             response.add_data("user", UserFetchSerializer(user).data)
             request.session[values.USER_ID_SESSIONS_KEY] = user.id
             return response
+        else:
+            user = User.users.login_user(email=request_data["email"], password=request_data["password"])
+            if user is None:
+                response = Response(error_code=Response.ERROR_605_AUTHENTICATION_FAILED)
+                response.set_msg("Email or Password not correct")
+                return response
+            else:
+                response = Response(error_code=status.HTTP_200_OK)
+                response.add_data("user", UserFetchSerializer(user).data)
+                request.session[values.USER_ID_SESSIONS_KEY] = user.id
+                return response
 
     @action(methods="post", url_path="user/<int:user_id>/logout/", detail=False)
     @authentication()
