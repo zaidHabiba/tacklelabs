@@ -39,15 +39,13 @@ class Response(res):
                 self.error_msg = self.reason_phrase
                 self.error_code = self.status_code
                 # for local only
-        """
-        self["Access-Control-Allow-Origin"] = "http://localhost:4200"
+        self["Access-Control-Allow-Origin"] = "https://www.tacklelabs.tech"
         self["Access-Control-Allow-Credentials"] = "true"
         self["Access-Control-Allow-Methods"] = "GET,HEAD,OPTIONS,POST,PUT"
         self["Access-Control-Allow-Headers"] = "Access-Control-Allow-Headers, Origin,Accept, " \
-                                                   "X-Requested-With, Content-Type, " \
-                                                   "Access-Control-Request-Method, " \
-                                                   "Access-Control-Request-Headers"
-        """
+                                               "X-Requested-With, Content-Type, " \
+                                               "Access-Control-Request-Method, " \
+                                               "Access-Control-Request-Headers"
         self.to_json()
 
     def to_json(self):
