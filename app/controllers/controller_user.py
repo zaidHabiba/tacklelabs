@@ -35,6 +35,7 @@ class UserRegisterCore(viewsets.ViewSet):
                 response = Response(error_code=status.HTTP_200_OK)
                 response.add_data("user", UserFetchSerializer(user).data)
                 request.session[values.USER_ID_SESSIONS_KEY] = user.id
+                response.set_cookie("addddd", "hello")
                 return response
 
     @action(methods="post", url_path="user/<int:user_id>/logout/", detail=False)
