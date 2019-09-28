@@ -27,7 +27,6 @@ class UserRegisterCore(viewsets.ViewSet):
         else:
             response = Response(error_code=Response.ERROR_605_AUTHENTICATION_FAILED)
             response.add_data("user", UserFetchSerializer(user).data)
-            response.add_data("photo", user.photo.url)
             request.session[values.USER_ID_SESSIONS_KEY] = user.id
             return response
 

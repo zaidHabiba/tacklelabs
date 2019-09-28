@@ -6,11 +6,18 @@ SECRET_KEY = 'bwl!z5k*xwi\=e5p!4ss72$m&4(cvbft+5c(afh+u$g#-*\=l*et'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['tacklelabs.tech',
+                 'www.tacklelabs.tech',
+                 'localhost',
+                 'http://localhost:3000'
+                 ]
+
+CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-    'tacklelabs.tech',
-    'www.tacklelabs.tech'
+    'http://localhost:3000',
+    'https://www.tacklelabs.tech',
+    'http://www.tacklelabs.tech',
 )
 
 INSTALLED_APPS = [
@@ -21,11 +28,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'app',
 ]
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

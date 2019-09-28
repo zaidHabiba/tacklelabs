@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
@@ -96,7 +98,7 @@ class User(models.Model):
     gender = models.CharField(max_length=16)
     email = models.EmailField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
-    photo = models.FileField(upload_to='user_photos', blank=True)
+    photo = models.FileField(upload_to='user_photos', blank=True, null=True, default=None)
     country = models.CharField(max_length=64)
     city = models.CharField(max_length=64)
     street = models.CharField(max_length=64, blank=True)
