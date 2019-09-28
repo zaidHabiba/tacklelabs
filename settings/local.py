@@ -6,11 +6,11 @@ SECRET_KEY = 'bwl!z5k*xwi\=e5p!4ss72$m&4(cvbft+5c(afh+u$g#-*\=l*et'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['tacklelabs.tech',
-                 'www.tacklelabs.tech',
-                 'localhost',
-                 'http://localhost:3000'
-                 ]
+ALLOWED_HOSTS = [
+    'https://www.tacklelabs.tech',
+    'http://www.tacklelabs.tech',
+    'http://localhost:3000'
+]
 
 CORS_ORIGIN_ALLOW_ALL = True
 
