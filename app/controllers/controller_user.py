@@ -25,7 +25,7 @@ class UserRegisterCore(viewsets.ViewSet):
             response.set_msg("Email or password not correct")
             return response
         else:
-            response = Response(error_code=Response.ERROR_605_AUTHENTICATION_FAILED)
+            response = Response(error_code=status.HTTP_200_OK)
             response.add_data("user", UserFetchSerializer(user).data)
             request.session[values.USER_ID_SESSIONS_KEY] = user.id
             return response
