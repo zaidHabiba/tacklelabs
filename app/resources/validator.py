@@ -45,7 +45,7 @@ def is_email_valid(email):
 def is_password_valid(password):
     if 8 < len(password) < 30:
         if re.search("[a-z]", password) \
-                and re.search("[A-Z]", password) \
+                || re.search("[A-Z]", password) \
                 and re.search("[0-9]", password):
             return True
     return False
