@@ -104,8 +104,8 @@ USE_L10N = True
 
 USE_TZ = True
 
-MEDIA_URL = 'https://backend.tacklelabs.tech/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, "https://backend.tacklelabs.tech/media/")
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
