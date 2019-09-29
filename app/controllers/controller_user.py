@@ -35,7 +35,6 @@ class UserRegisterCore(viewsets.ViewSet):
                 response = Response(error_code=status.HTTP_200_OK)
                 response.add_data("user", UserFetchSerializer(user).data)
                 request.session[values.USER_ID_SESSIONS_KEY] = user.id
-                response.set_cookie("addddd", "hello")
                 return response
 
     @action(methods="post", url_path="user/<int:user_id>/logout/", detail=False)
@@ -45,7 +44,7 @@ class UserRegisterCore(viewsets.ViewSet):
         operation_state = User.users.logout_user(user_id=user_id)
         if operation_state:
             del request.session[values.USER_ID_SESSIONS_KEY]
-            response = Response(error_code=Response.ERROR_605_AUTHENTICATION_FAILED)
+            response = Response(error_code=status.HTTP_200_OK)
             response.set_msg("Logout successful")
             return response
         else:
@@ -67,7 +66,7 @@ class UserRegisterCore(viewsets.ViewSet):
         user_serializer = UserSerializer(data=request_data)
         if user_serializer.is_valid():
             user = user_serializer.save()
-            response = Response(error_code=Response.ERROR_605_AUTHENTICATION_FAILED)
+            response = Response(error_code=status.HTTP_200_OK)
             response.add_data("user", UserFetchSerializer(user).data)
             request.session[values.USER_ID_SESSIONS_KEY] = user.id
             return response

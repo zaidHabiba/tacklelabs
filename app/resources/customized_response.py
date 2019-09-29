@@ -40,16 +40,16 @@ class Response(res):
                 self.error_code = self.status_code
                 # for local only
         self.to_json()
-        """                
-                self["Access-Control-Allow-Origin"] = "https://www.tacklelabs.tech"
-                self["Access-Control-Allow-Credentials"] = "true"
-                self["Access-Control-Allow-Methods"] = "GET,HEAD,OPTIONS,POST,PUT"
-                self["Access-Control-Allow-Headers"] = "Access-Control-Allow-Headers, Origin,Accept, " \
-                                                       "X-Requested-With, Content-Type, " \
-                                                       "Access-Control-Request-Method, " \
-                                                       "Access-Control-Request-Headers"
-                """
+        """
+        self["Access-Control-Allow-Origin"] = "http://localhost:3000"
+        self["Access-Control-Allow-Credentials"] = "true"
+        self["Access-Control-Allow-Methods"] = "GET,HEAD,OPTIONS,POST,PUT"
+        self["Access-Control-Allow-Headers"] = "Access-Control-Allow-Headers, Origin,Accept, " \
+                                               "X-Requested-With, Content-Type, " \
+                                               "Access-Control-Request-Method, " \
+                                               "Access-Control-Request-Headers"
 
+        """
     def to_json(self):
         self.data = {
             "data": self.data_to_set,
