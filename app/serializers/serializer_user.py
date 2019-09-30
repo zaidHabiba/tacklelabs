@@ -107,7 +107,7 @@ class UserSerializer(serializers.ModelSerializer):
         new_city = data.get('city')
         if new_city is not None:
             if is_name_valid(new_city):
-                instance.type = new_city
+                instance.city = new_city
             else:
                 exception.add_error_field("city", "city not valid")
 
