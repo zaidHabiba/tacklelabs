@@ -13,10 +13,12 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = False
+Access_Control_Allow_Credentials = True
 
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
     'https://www.tacklelabs.tech',
+    'http://www.tacklelabs.tech',
 )
 
 INSTALLED_APPS = [

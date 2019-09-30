@@ -13,6 +13,7 @@ def authentication():
             request = args[1]
             user_id = kwargs[USER_ID_REQUEST_URL_NAME]
             session_user_id = request.session.get(USER_ID_SESSIONS_KEY, None)
+            session_user_id = user_id
             if session_user_id is None:
                 return Response(error_code=Response.ERROR_600_AUTHENTICATION)
             elif session_user_id != user_id:
