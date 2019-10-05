@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from app.models.model_institutions import Institution, InstitutionType
+from app.models.model_institutions import Institution, InstitutionType, HospitalJoinRequest
 from app.resources.exceptions import ValidationDataException
 from app.resources.validator import is_name_valid
 
@@ -17,6 +17,20 @@ class InstitutionFetchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Institution
+        fields = "__all__"
+
+
+class HJIRSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HospitalJoinRequest
+        fields = "__all__"
+
+
+class HJIRFetchSerializer(serializers.ModelSerializer):
+    hospital = InstitutionFetchSerializer()
+
+    class Meta:
+        model = HospitalJoinRequest
         fields = "__all__"
 
 

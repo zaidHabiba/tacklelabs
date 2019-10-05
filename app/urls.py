@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.urls import path
 
 from app.controllers.controller_user import user_login, user_logout, user_signup, user_update, user_update_password
-from app.controllers.controller_institutions import create_hospital,create_lab,create_software_company,update_institution,fetch_institution
+from app.controllers.controller_institutions import create_hospital,create_lab,create_software_company, \
+    update_institution,fetch_institution, fetch_hospitals, hospital_join_request, search_hospitals,cancel_join_request
 from settings import local
 
 urlpatterns = [
@@ -17,5 +18,10 @@ urlpatterns = [
     path('user/<int:user_id>/create_lab/', create_lab),
     path('user/<int:user_id>/create_software_company/', create_software_company),
     path('user/<int:user_id>/update_institution/<int:institution_id>', update_institution),
-    path('user/<int:user_id>/fetch_institution/<int:institution_id>', fetch_institution)
+    path('user/<int:user_id>/fetch_institution/<int:institution_id>', fetch_institution),
+    path('fetch_hospitals/', fetch_hospitals),
+    path('user/<int:user_id>/hospital_join_request/', hospital_join_request),
+    path('user/<int:user_id>/search_hospitals/', search_hospitals),
+    path('user/<int:user_id>/cancel_join_request/<int:join_request_id>', cancel_join_request),
+
 ] + static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)

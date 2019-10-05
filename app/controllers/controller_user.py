@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -9,9 +10,11 @@ from app.resources.decorators import validation_parameters, authentication, vali
 from app.resources.exceptions import ValidationDataException
 from app.resources.validator import is_email_valid, is_password_valid, is_date_valid, is_name_valid, is_gender_valid, \
     is_int_valid
-from app.serializers.serializer_user import UserFetchSerializer, UserSerializer
-from django.core.exceptions import ObjectDoesNotExist
 from app.resources.values import USER_ID_SESSIONS_KEY
+from app.serializers.serializer_institutions import InstitutionFetchSerializer,HJIRFetchSerializer
+from app.serializers.serializer_user import UserFetchSerializer, UserSerializer
+
+
 class UserRegisterCore(viewsets.ViewSet):
 
     @action(methods="post", url_path="user/login/", detail=False)
@@ -22,7 +25,16 @@ class UserRegisterCore(viewsets.ViewSet):
         if session_user_id is not None:
             user = User.users.get(id=session_user_id)
             response = Response(error_code=status.HTTP_200_OK)
-            response.add_data("user", UserFetchSerializer(user).data)
+            data = UserFetchSerializer(user).data.copy()
+            institution = User.users.have_institution(user.id)
+            join_institution = User.users.is_join_hospital(user.id)
+            if institution is not None:
+                data["institution"] = InstitutionFetchSerializer(institution).data
+            else:
+                if join_institution is not None:
+                    data["join_institution"] = HJIRFetchSerializer(join_institution).data
+
+            response.add_data("user", data)
             request.session[values.USER_ID_SESSIONS_KEY] = user.id
             return response
         else:
@@ -33,7 +45,15 @@ class UserRegisterCore(viewsets.ViewSet):
                 return response
             else:
                 response = Response(error_code=status.HTTP_200_OK)
-                response.add_data("user", UserFetchSerializer(user).data)
+                data = UserFetchSerializer(user).data.copy()
+                institution = User.users.have_institution(user.id)
+                if institution is not None:
+                    data["institution"] = InstitutionFetchSerializer(institution).data
+                else:
+                    join_institution = User.users.is_join_hospital(user.id)
+                    if join_institution is not None:
+                        data["join_institution"] = HJIRFetchSerializer(join_institution).data
+                response.add_data("user", data)
                 request.session[values.USER_ID_SESSIONS_KEY] = user.id
                 return response
 

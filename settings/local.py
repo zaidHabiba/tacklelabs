@@ -74,12 +74,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'wsgi.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+DATABASES = {}
+
+import dj_database_url
+
+DB_URL = os.environ.get('HEROKU_POSTGRESQL_ROSE_URL')
+if DB_URL is None:
+    DB_URL = "postgres://inzjwrcbigafwo:2d4512fe1508de6db8ce557cc5eb577c4571c0ae5aa1bb9a86af2aae62379cae@ec2-54-75-238-138.eu-west-1.compute.amazonaws.com:5432/d3uc6kc3chsqob"
+DATABASES['default'] = dj_database_url.parse(DB_URL, conn_max_age=600)
 
 AUTH_PASSWORD_VALIDATORS = [
     {

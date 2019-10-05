@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
@@ -68,6 +66,22 @@ class UserManager(models.Manager):
             return True
         except ObjectDoesNotExist:
             return False
+
+    def have_institution(self, user_id):
+        try:
+            from app.models.model_institutions import Institution
+            institution = Institution.institutions.get(manager=user_id)
+            return institution
+        except ObjectDoesNotExist:
+            return None
+
+    def is_join_hospital(self, user_id):
+        try:
+            from app.models.model_institutions import HospitalJoinRequest
+            institution = HospitalJoinRequest.objects.get(doctor=user_id)
+            return institution
+        except ObjectDoesNotExist:
+            return None
 
 
 class DeveloperTypeManager(models.Manager):
