@@ -11,8 +11,8 @@ from app.resources.exceptions import ValidationDataException
 from app.resources.validator import is_email_valid, is_password_valid, is_date_valid, is_name_valid, is_gender_valid, \
     is_int_valid
 from app.resources.values import USER_ID_SESSIONS_KEY
-from app.serializers.serializer_institutions import InstitutionFetchSerializer,HJIRFetchSerializer
-from app.serializers.serializer_user import UserFetchSerializer, UserSerializer
+from app.serializers.serializer_institutions import InstitutionFetchSerializer, HJIRFetchSerializer
+from app.serializers.serializer_user import UserFetchSerializer, UserSerializer, UserFetchSearchSerializer
 
 
 class UserRegisterCore(viewsets.ViewSet):
@@ -148,9 +148,51 @@ class UserRegisterCore(viewsets.ViewSet):
                 response.add_data("validation_errors", e.get_errors_list())
                 return response
 
+    @action(methods="get", url_path="user/<int:user_id>/get_send_users/", detail=False)
+    @authentication()
+    def get_send_users(self, request, *args, **kwargs):
+        user_id = kwargs[values.USER_ID_REQUEST_URL_NAME]
+        search = request.GET["search"]
+        print(search)
+        user = User.users.get(id=user_id)
+        if search is not None:
+            doctors = User.doctors.filter(first_name__contains=search).exclude(id=user.id) \
+                      | User.doctors.filter(second_name__contains=search).exclude(id=user.id) \
+                      | User.patients.filter(email__contains=search).exclude(id=user.id) \
+                      | User.patients.filter(middle_name__contains=search).exclude(id=user.id) \
+                      | User.patients.filter(last_name__contains=search).exclude(id=user.id)
+            patient = User.patients.filter(first_name__contains=search).exclude(id=user.id) \
+                      | User.doctors.filter(second_name__contains=search).exclude(id=user.id) \
+                      | User.patients.filter(email__contains=search).exclude(id=user.id) \
+                      | User.patients.filter(middle_name__contains=search).exclude(id=user.id) \
+                      | User.patients.filter(last_name__contains=search).exclude(id=user.id)
+            doctors_serializer = UserFetchSearchSerializer(doctors, many=True)
+            patient_serializer = UserFetchSearchSerializer(patient, many=True)
+        else:
+            doctors = User.doctors.filter(country=user.country).exclude(id=user.id)
+            patient = User.patients.filter(country=user.country).exclude(id=user.id)
+            doctors_serializer = UserFetchSearchSerializer(doctors, many=True)
+            patient_serializer = UserFetchSearchSerializer(patient, many=True)
+        data = []
+
+        for item in patient_serializer.data:
+            data.append(item)
+        for item in doctors_serializer.data:
+            data.append(item)
+
+        final_data = []
+        for item in data:
+            if item["id"] not in [final_item["id"] for final_item in final_data]:
+                final_data.append(item)
+
+        response = Response(error_code=status.HTTP_200_OK)
+        response.add_data("users", final_data)
+        return response
+
 
 user_login = UserRegisterCore.as_view(actions={'post': 'user_login'})
 user_logout = UserRegisterCore.as_view(actions={'post': 'user_logout'})
 user_signup = UserRegisterCore.as_view(actions={'post': 'user_signup'})
 user_update = UserRegisterCore.as_view(actions={'put': 'user_update'})
 user_update_password = UserRegisterCore.as_view(actions={'put': 'user_update_password'})
+get_send_users = UserRegisterCore.as_view(actions={'get': 'get_send_users'})

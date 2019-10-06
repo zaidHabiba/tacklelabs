@@ -38,6 +38,12 @@ class UserFetchSerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'second_name', 'middle_name', 'country', 'city', 'street'
                   , 'last_name', 'type', 'phone_number', 'gender', 'email', 'photo', 'birth_date', 'is_login')
 
+class UserFetchSearchSerializer(serializers.ModelSerializer):
+    type = UserTypeSerializer()
+
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'type', 'phone_number', 'gender', 'email', 'photo')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

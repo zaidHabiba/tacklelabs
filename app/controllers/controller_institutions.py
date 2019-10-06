@@ -18,9 +18,7 @@ class InstitutionCore(viewsets.ViewSet):
     @permissions([values.PERMISSION_TYPE_DOCTOR])
     @validation_parameters(["name", "logo"])
     def create_hospital(self, request, *args, **kwargs):
-
         user_id = kwargs[values.USER_ID_REQUEST_URL_NAME]
-
         request_data = request.data.copy()
         request_data['manager'] = user_id
         request_data['type'] = values.INSTITUTION_HOSPITAL_ID
@@ -142,7 +140,6 @@ class InstitutionCore(viewsets.ViewSet):
     @authentication()
     def cancel_join_request(self, request, *args, **kwargs):
         join_request_id = kwargs["join_request_id"]
-
         try:
             join_request = HospitalJoinRequest.objects.get(id=join_request_id)
             join_request.delete()
