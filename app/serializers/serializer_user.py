@@ -9,25 +9,24 @@ from app.resources.validator import is_password_valid, is_name_valid, is_gender_
 class UserTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserType
-        fields = ('id', 'type', 'logo')
+        fields = ('id', 'type')
 
 
 class DoctorFetchSerializer(serializers.ModelSerializer):
-    type = UserTypeSerializer()
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'phone_number', 'email', 'photo')
+        fields = ('id', 'first_name', 'last_name', 'code', 'phone_number', 'email', 'photo')
 
 
 class PatientFetchSerializer(serializers.ModelSerializer):
-    type = UserTypeSerializer()
 
     class Meta:
         model = User
         fields = (
-        'id', 'first_name', 'second_name', 'middle_name', 'gender', 'last_name', 'phone_number', 'birth_date', 'email',
-        'photo')
+            'id', 'first_name', 'second_name', 'middle_name', 'gender', 'last_name', 'phone_number', 'code',
+            'birth_date', 'email',
+            'photo')
 
 
 class UserFetchSerializer(serializers.ModelSerializer):
@@ -36,14 +35,16 @@ class UserFetchSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'second_name', 'middle_name', 'country', 'city', 'street'
-                  , 'last_name', 'type', 'phone_number', 'gender', 'email', 'photo', 'birth_date', 'is_login')
+                  , 'last_name', 'type', 'code', 'phone_number', 'gender', 'email', 'photo', 'birth_date', 'is_login')
+
 
 class UserFetchSearchSerializer(serializers.ModelSerializer):
     type = UserTypeSerializer()
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'type', 'phone_number', 'gender', 'email', 'photo')
+        fields = ('id', 'first_name', 'last_name', 'code', 'type', 'phone_number', 'gender', 'email', 'photo')
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

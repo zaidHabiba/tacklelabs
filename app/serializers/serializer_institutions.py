@@ -9,15 +9,20 @@ from app.resources.validator import is_name_valid
 class InstitutionTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstitutionType
-        fields = ('id', 'type', 'logo')
+        fields = ('id', 'type')
 
 
-class InstitutionFetchSerializer(serializers.ModelSerializer):
+class InstitutionFetchHansSerializer(serializers.ModelSerializer):
     type = InstitutionTypeSerializer()
-
     class Meta:
         model = Institution
         fields = "__all__"
+
+
+class InstitutionFetchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institution
+        fields = ("name", "logo", "id")
 
 
 class HJIRSerializer(serializers.ModelSerializer):
@@ -27,7 +32,7 @@ class HJIRSerializer(serializers.ModelSerializer):
 
 
 class HJIRFetchSerializer(serializers.ModelSerializer):
-    hospital = InstitutionFetchSerializer()
+    hospital = InstitutionFetchHansSerializer()
 
     class Meta:
         model = HospitalJoinRequest

@@ -3,19 +3,19 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from app.models.model_institutions import Institution,HospitalJoinRequest
+from app.models.model_institutions import Institution, HospitalJoinRequest
 from app.resources import values
 from app.resources.customized_response import Response
 from app.resources.decorators import validation_parameters, authentication, permissions
 from app.serializers.serializer_institutions import InstitutionSerializer, HJIRSerializer, InstitutionFetchSerializer, \
-    HJIRFetchSerializer
+    HJIRFetchSerializer, InstitutionFetchHansSerializer
 
 
 class InstitutionCore(viewsets.ViewSet):
 
     @action(methods="post", url_path="user/<int:user_id>/create_hospital/", detail=False)
     @authentication()
-    @permissions([values.PERMISSION_TYPE_DOCTOR])
+    @permissions([values.PERMISSION_TYPE_SUPERVISOR])
     @validation_parameters(["name", "logo"])
     def create_hospital(self, request, *args, **kwargs):
         user_id = kwargs[values.USER_ID_REQUEST_URL_NAME]
@@ -36,7 +36,7 @@ class InstitutionCore(viewsets.ViewSet):
 
     @action(methods="post", url_path="user/<int:user_id>/create_lab/", detail=False)
     @authentication()
-    @permissions([values.PERMISSION_TYPE_DOCTOR])
+    @permissions([values.PERMISSION_TYPE_SUPERVISOR])
     @validation_parameters(["name", "logo"])
     def create_lab(self, request, *args, **kwargs):
         user_id = kwargs[values.USER_ID_REQUEST_URL_NAME]
@@ -152,7 +152,7 @@ class InstitutionCore(viewsets.ViewSet):
     @action(methods="post", url_path="fetch_hospitals/", detail=False)
     def fetch_hospitals(self, request, *args, **kwargs):
         hospitals = Institution.hospitals.all()
-        hospitals_serializer = InstitutionFetchSerializer(hospitals, many=True)
+        hospitals_serializer = InstitutionFetchHansSerializer(hospitals, many=True)
         response = Response(error_code=status.HTTP_200_OK)
         response.add_data("hospitals", hospitals_serializer.data)
         return response
@@ -163,7 +163,7 @@ class InstitutionCore(viewsets.ViewSet):
         search = request.GET["search"]
         hospitals = Institution.hospitals.filter(name__contains=search)
         print(hospitals)
-        hospitals_serializer = InstitutionFetchSerializer(hospitals, many=True)
+        hospitals_serializer = InstitutionFetchHansSerializer(hospitals, many=True)
         response = Response(error_code=status.HTTP_200_OK)
         response.add_data("hospitals", hospitals_serializer.data)
         return response

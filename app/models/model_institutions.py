@@ -22,9 +22,11 @@ class HospitalTypeManager(models.Manager):
 
 class InstitutionType(models.Model):
     type = models.CharField(max_length=64)
-    logo = models.FileField(upload_to='institution_type_logo', blank=True)
 
     types = InstitutionTypesManager()
+
+    def __str__(self):
+        return self.type
 
 
 class Institution(models.Model):
@@ -45,6 +47,9 @@ class Institution(models.Model):
     institutions = InstitutionManager()
     hospitals = HospitalTypeManager()
 
+    def __str__(self):
+        return self.name
+
 
 class HospitalJoinRequest(models.Model):
     hospital = models.ForeignKey(Institution, on_delete=models.CASCADE)
@@ -54,6 +59,8 @@ class HospitalJoinRequest(models.Model):
     title = models.CharField(max_length=128, blank=True)
     msg = models.CharField(max_length=128, blank=True)
 
+    def __str__(self):
+        return self.title
 
 """
 class MedicalField(models.Model):

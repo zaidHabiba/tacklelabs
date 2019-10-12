@@ -1,13 +1,22 @@
+import random
+import string
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 from app.resources.encryptor import encrypt_password
 
 
+def generate_id(size, chars=string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for x in range(size))
+
+
 class UserType(models.Model):
     type = models.CharField(max_length=32)
-    logo = models.FileField(upload_to='user_type_logo')
     types = models.Manager()
+
+    def __str__(self):
+        return self.type
 
 
 class UserManager(models.Manager):
@@ -115,6 +124,7 @@ class User(models.Model):
     photo = models.FileField(upload_to='user_photos', blank=True, null=True, default=None)
     country = models.CharField(max_length=64)
     city = models.CharField(max_length=64)
+    code = models.CharField(max_length=7,blank=True)
     street = models.CharField(max_length=64, blank=True)
     birth_date = models.DateField()
     register_date = models.DateField(auto_now=True)
@@ -124,3 +134,11 @@ class User(models.Model):
     doctors = DoctorTypeManager()
     developers = DeveloperTypeManager()
     patients = PatientTypeManager()
+
+    def __str__(self):
+        return self.email
+
+    def save(self, *args, **kwargs):
+        if self.code is None:
+            self.code = generate_id(6)
+        super(User, self).save(*args, **kwargs)
