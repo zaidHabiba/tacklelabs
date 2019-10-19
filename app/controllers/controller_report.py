@@ -3,12 +3,14 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
+from app.models.model_report import ReportHub
 from app.models.model_user import User
 from app.resources.customized_response import Response
 from app.resources.decorators import authentication
+from app.resources.values import USER_ID_REQUEST_URL_NAME
 from app.serializers.serializer_report import Report, ReportImage
 from app.serializers.serializer_report import ReportSerializer, ReportImageSerializer, ReportFetchSerializer, \
-    ReportHubSerializer
+    ReportHubSerializer, ReportHubFetchSerializer
 
 
 class UserRegisterCore(viewsets.ViewSet):
@@ -16,7 +18,6 @@ class UserRegisterCore(viewsets.ViewSet):
     @action(methods="post", url_path="user/<int:user_id>/create_report/", detail=False)
     @authentication()
     def create_report(self, request, *args, **kwargs):
-        print(request.data)
         request_data = request.data.copy()
         photo_size = int(request_data["photo_size"])
         photos = []
@@ -105,9 +106,48 @@ class UserRegisterCore(viewsets.ViewSet):
         response.set_msg("Send done")
         return response
 
+    @action(methods="get", url_path="user/<int:user_id>/fetch_reports_hub_by_sender/", detail=False)
+    @authentication()
+    def fetch_reports_hub_by_sender(self, request, *args, **kwargs):
+        try:
+            user_id = kwargs[USER_ID_REQUEST_URL_NAME]
+            reports = ReportHub.objects.filter(receiver=user_id)
+            reports_serializer = ReportHubFetchSerializer(reports, many=True)
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("reports", reports_serializer.data)
+            return response
+        except ObjectDoesNotExist:
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("reports", [])
+            return response
+
+    @action(methods="get", url_path="user/<int:user_id>/fetch_doctor_reports/", detail=False)
+    @authentication()
+    def fetch_doctor_reports(self, request, *args, **kwargs):
+        try:
+            doctor_id = kwargs["user_id"]
+            search = request.GET["search"]
+            patient = User.patients.filter(first_name__contains=search) \
+                      | User.patients.filter(second_name__contains=search) \
+                      | User.patients.filter(middle_name__contains=search) \
+                      | User.patients.filter(last_name__contains=search)
+            reports = Report.objects.filter(doctor=doctor_id).filter(patient__in=patient)
+            reports_serializer = ReportFetchSerializer(reports, many=True)
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("reports", reports_serializer.data)
+            return response
+        except ObjectDoesNotExist:
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("reports", [])
+            return response
+
+
+
 
 create_report = UserRegisterCore.as_view(actions={'post': 'create_report'})
 fetch_report_images = UserRegisterCore.as_view(actions={'get': 'fetch_report_images'})
 fetch_lab_saved_reports = UserRegisterCore.as_view(actions={'get': 'fetch_lab_saved_reports'})
 fetch_lab_saved_reports_search = UserRegisterCore.as_view(actions={'get': 'fetch_lab_saved_reports_search'})
 send_report = UserRegisterCore.as_view(actions={'post': 'send_report'})
+fetch_reports_hub_by_sender = UserRegisterCore.as_view(actions={'get': 'fetch_reports_hub_by_sender'})
+fetch_doctor_reports = UserRegisterCore.as_view(actions={'get': 'fetch_doctor_reports'})

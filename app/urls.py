@@ -2,11 +2,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from app.controllers.controller_user import user_login, user_logout, user_signup, user_update, user_update_password, get_send_users, get_patients
+from app.controllers.controller_user import user_login, user_logout, user_signup, user_update, user_update_password, get_send_users, get_patients, get_send_users_patients
 from app.controllers.controller_institutions import create_hospital,create_lab,create_software_company, \
     update_institution,fetch_institution, fetch_hospitals, hospital_join_request, search_hospitals,cancel_join_request
 from settings import local
-from app.controllers.controller_report import create_report, fetch_report_images, fetch_lab_saved_reports, fetch_lab_saved_reports_search,send_report
+from app.controllers.controller_report import create_report, fetch_doctor_reports, fetch_report_images, fetch_lab_saved_reports, fetch_lab_saved_reports_search,send_report, fetch_reports_hub_by_sender
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/login/', user_login),
@@ -30,4 +30,7 @@ urlpatterns = [
     path("user/<int:user_id>/fetch_reports/<int:lab>", fetch_lab_saved_reports),
     path("user/<int:user_id>/fetch_lab_saved_reports_search/<int:lab>/", fetch_lab_saved_reports_search),
     path("user/<int:user_id>/send_report/", send_report),
+    path("user/<int:user_id>/get_send_users_patients/", get_send_users_patients),
+    path("user/<int:user_id>/fetch_reports_hub_by_sender/", fetch_reports_hub_by_sender),
+    path("user/<int:user_id>/fetch_doctor_reports/", fetch_doctor_reports),
 ] + static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)

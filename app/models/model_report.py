@@ -10,8 +10,8 @@ class Report(models.Model):
     lab = models.ForeignKey(Institution, on_delete=models.DO_NOTHING, related_name="lab", null=True, blank=True,
                             default=None)
     patient = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="patient")
-    title = models.CharField(max_length=128)
-    description = models.CharField(max_length=255, null=True, blank=True)
+    title = models.TextField()
+    description = models.TextField(null=True, blank=True)
     create_date = models.DateTimeField(auto_now_add=True, blank=True)
 
     def __str__(self):

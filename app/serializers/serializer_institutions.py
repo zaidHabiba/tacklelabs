@@ -4,6 +4,7 @@ from rest_framework import serializers
 from app.models.model_institutions import Institution, InstitutionType, HospitalJoinRequest
 from app.resources.exceptions import ValidationDataException
 from app.resources.validator import is_name_valid
+from app.serializers.serializer_user import UserFetchSearchSerializer
 
 
 class InstitutionTypeSerializer(serializers.ModelSerializer):
@@ -14,15 +15,18 @@ class InstitutionTypeSerializer(serializers.ModelSerializer):
 
 class InstitutionFetchHansSerializer(serializers.ModelSerializer):
     type = InstitutionTypeSerializer()
+
     class Meta:
         model = Institution
         fields = "__all__"
 
 
 class InstitutionFetchSerializer(serializers.ModelSerializer):
+    manager = UserFetchSearchSerializer()
+
     class Meta:
         model = Institution
-        fields = ("name", "logo", "id")
+        fields = ("name", "logo", "id", "manager")
 
 
 class HJIRSerializer(serializers.ModelSerializer):

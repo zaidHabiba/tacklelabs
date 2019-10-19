@@ -13,14 +13,12 @@ class UserTypeSerializer(serializers.ModelSerializer):
 
 
 class DoctorFetchSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'code', 'phone_number', 'email', 'photo')
 
 
 class PatientFetchSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
         fields = (
@@ -65,7 +63,6 @@ class UserSerializer(serializers.ModelSerializer):
                 exception.add_error_field("password", "password not valid")
         else:
             exception.add_error_field("password", "password not found")
-
         if exception.is_exception():
             raise exception
         else:
@@ -73,9 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def update(self, instance, data):
         exception = ValidationDataException()
-
         instance.photo = data.get('photo', instance.photo)
-
         new_first_name = data.get('first_name')
         if new_first_name is not None:
             if is_name_valid(new_first_name):

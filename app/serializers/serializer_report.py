@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from app.models.model_report import Report, ReportImage, ReportHub
 from app.serializers.serializer_institutions import InstitutionFetchSerializer
-from app.serializers.serializer_user import DoctorFetchSerializer, PatientFetchSerializer
+from app.serializers.serializer_user import DoctorFetchSerializer, PatientFetchSerializer, UserFetchSearchSerializer
 
 
 class ReportSerializer(serializers.ModelSerializer):
@@ -41,7 +41,9 @@ class ReportHubSerializer(serializers.ModelSerializer):
 
 class ReportHubFetchSerializer(serializers.ModelSerializer):
     report = ReportFetchSerializer()
+    sender = UserFetchSearchSerializer()
+    receiver = UserFetchSearchSerializer()
 
     class Meta:
         model = ReportHub
-        fields = ('id', 'report', 'sender', 'title', 'msg')
+        fields = ('id', 'report', 'sender', 'title', 'msg', 'receiver')
