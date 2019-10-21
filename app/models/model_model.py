@@ -29,6 +29,7 @@ class Model(models.Model):
     description = models.TextField()
     version = models.CharField(max_length=64)
     logo = models.FileField(upload_to='F114225')
+    request_cost = models.FloatField()
 
 
 class ModelImage(models.Model):

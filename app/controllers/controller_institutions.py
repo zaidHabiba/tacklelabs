@@ -40,7 +40,6 @@ class InstitutionCore(viewsets.ViewSet):
     @validation_parameters(["name", "logo"])
     def create_lab(self, request, *args, **kwargs):
         user_id = kwargs[values.USER_ID_REQUEST_URL_NAME]
-
         request_data = request.data.copy()
         request_data['manager'] = user_id
         request_data['type'] = values.INSTITUTION_LAB_ID

@@ -1,8 +1,44 @@
 from django.contrib import admin
 
 from app.models.model_institutions import Institution, InstitutionType, HospitalJoinRequest
+from app.models.model_model import ModelSubscription, ModelImage, IOAPI, IORequest, API, Model, ModelRequest
 from app.models.model_report import ReportImage, Report, ReportHub
 from app.models.model_user import User, UserType
+
+
+@admin.register(Model)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ModelRequest)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(IORequest)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(API)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ModelSubscription)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ModelImage)
+class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(IOAPI)
+class UserAdmin(admin.ModelAdmin):
+    pass
 
 
 @admin.register(User)
@@ -32,7 +68,7 @@ class ReportAdmin(admin.ModelAdmin):
 
 @admin.register(ReportHub)
 class ReportHubAdmin(admin.ModelAdmin):
-    list_display = ('id','report', 'sender', 'receiver', 'title', 'msg')
+    list_display = ('id', 'report', 'sender', 'receiver', 'title', 'msg')
 
 
 admin.site.register(HospitalJoinRequest)
