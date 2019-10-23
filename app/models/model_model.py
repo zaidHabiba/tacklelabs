@@ -14,22 +14,28 @@ class IOAPI(models.Model):
     title = models.CharField(max_length=250)
     is_input = models.BooleanField()
     json_name = models.CharField(max_length=128)
-
-
-class ModelSubscription(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    request_numbers = models.IntegerField(blank=True)
-    is_free = models.BooleanField()
+    is_file = models.BooleanField()
 
 
 class Model(models.Model):
     company = models.ForeignKey(Institution, on_delete=models.CASCADE)
     api = models.ForeignKey(API, on_delete=models.CASCADE)
-    name = models.FileField(max_length=128)
+    name = models.CharField(max_length=128)
     description = models.TextField()
     version = models.CharField(max_length=64)
     logo = models.FileField(upload_to='F114225')
     request_cost = models.FloatField()
+    free_request = models.IntegerField(blank=True, default=0, null=True)
+    patient_model = models.BooleanField(default=False, blank=True, null=True)
+    doctor_model = models.BooleanField(default=True, blank=True, null=True)
+    lab_model = models.BooleanField(default=False, blank=True, null=True)
+
+
+class ModelSubscription(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    model = models.ForeignKey(Model, on_delete=models.CASCADE, blank=True)
+    request_numbers = models.IntegerField(blank=True)
+    is_free = models.BooleanField()
 
 
 class ModelImage(models.Model):
