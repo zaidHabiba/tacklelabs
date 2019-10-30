@@ -7,7 +7,7 @@ from app.controllers.controller_institutions import create_hospital,create_lab,c
     update_institution,fetch_institution, fetch_hospitals, hospital_join_request, search_hospitals,cancel_join_request
 from settings import local
 from app.controllers.controller_report import create_report, fetch_doctor_reports, fetch_report_images, fetch_lab_saved_reports, fetch_lab_saved_reports_search,send_report, fetch_reports_hub_by_sender
-from app.controllers.controller_model import create_api, create_io_api, create_model, create_image_model, send_request, fetch_models
+from app.controllers.controller_model import create_api, fetch_subscription, create_io_api, create_model, create_image_model, send_request, fetch_models, create_subscription, fetch_model_images
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('user/login/', user_login),
@@ -39,5 +39,8 @@ urlpatterns = [
     path("user/<int:user_id>/create_image_model/", create_image_model),
     path("user/<int:user_id>/create_io_api/", create_io_api),
     path("user/<int:user_id>/send_request/<int:api>/", send_request),
-    path("user/<int:user_id>/fetch_models", fetch_models)
+    path("user/<int:user_id>/fetch_models", fetch_models),
+    path("user/<int:user_id>/create_subscription/", create_subscription),
+    path("user/<int:user_id>/fetch_model_images/<model_id>", fetch_model_images),
+    path("user/<int:user_id>/fetch_subscription/", fetch_subscription)
 ] + static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)

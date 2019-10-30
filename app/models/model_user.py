@@ -29,11 +29,11 @@ class UserManager(models.Manager):
         else:
             return True
 
-    def get_user_type(self, user_id):
+    def get_user_type(self, user_id) -> UserType:
         user = self.get_queryset().get(id=user_id)
         return user.type
 
-    def is_doctor(self, type):
+    def is_doctor(self, type) -> bool:
         if type.type == "Doctor":
             return True
         else:
@@ -124,7 +124,7 @@ class User(models.Model):
     photo = models.FileField(upload_to='user_photos', blank=True, null=True, default=None)
     country = models.CharField(max_length=64)
     city = models.CharField(max_length=64)
-    code = models.CharField(max_length=7,blank=True)
+    code = models.CharField(max_length=7, blank=True)
     street = models.CharField(max_length=64, blank=True)
     birth_date = models.DateField()
     register_date = models.DateField(auto_now=True)

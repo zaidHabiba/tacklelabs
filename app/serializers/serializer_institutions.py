@@ -21,6 +21,12 @@ class InstitutionFetchHansSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class InstitutionSimpleFetchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Institution
+        fields = ("name", "logo", "id", "manager")
+
+
 class InstitutionFetchSerializer(serializers.ModelSerializer):
     manager = UserFetchSearchSerializer()
 

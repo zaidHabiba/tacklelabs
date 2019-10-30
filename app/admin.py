@@ -8,7 +8,7 @@ from app.models.model_user import User, UserType
 
 @admin.register(Model)
 class UserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name', 'version', 'api', 'company')
 
 
 @admin.register(ModelRequest)
@@ -23,12 +23,12 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(API)
 class UserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('url', 'method')
 
 
 @admin.register(ModelSubscription)
 class UserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('user', 'model', 'number_of_request', 'request_used', 'is_free')
 
 
 @admin.register(ModelImage)
@@ -38,12 +38,12 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(IOAPI)
 class UserAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('api', 'title', 'is_input', 'json_name', 'is_file')
 
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'email', 'first_name', 'last_name')
+    list_display = ('id', 'email', 'type', 'first_name', 'last_name')
 
 
 @admin.register(UserType)
@@ -71,5 +71,9 @@ class ReportHubAdmin(admin.ModelAdmin):
     list_display = ('id', 'report', 'sender', 'receiver', 'title', 'msg')
 
 
-admin.site.register(HospitalJoinRequest)
+@admin.register(HospitalJoinRequest)
+class ReportHubAdmin(admin.ModelAdmin):
+    list_display = ('id', 'doctor', 'hospital', 'is_accepted', 'send_date')
+
+
 admin.site.register(ReportImage)

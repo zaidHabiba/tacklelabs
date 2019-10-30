@@ -26,15 +26,20 @@ class Model(models.Model):
     logo = models.FileField(upload_to='F114225')
     request_cost = models.FloatField()
     free_request = models.IntegerField(blank=True, default=0, null=True)
+    discount_percentage = models.FloatField(blank=True, default=0, null=True)
+    discount_rate = models.IntegerField(blank=True, default=0, null=True)
     patient_model = models.BooleanField(default=False, blank=True, null=True)
     doctor_model = models.BooleanField(default=True, blank=True, null=True)
     lab_model = models.BooleanField(default=False, blank=True, null=True)
 
+    def __str__(self):
+        return self.name
 
 class ModelSubscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     model = models.ForeignKey(Model, on_delete=models.CASCADE, blank=True)
-    request_numbers = models.IntegerField(blank=True)
+    number_of_request = models.IntegerField(blank=True)
+    request_used = models.IntegerField(blank=True, default=0, null=True)
     is_free = models.BooleanField()
 
 
@@ -54,3 +59,11 @@ class IORequest(models.Model):
     request = models.ForeignKey(ModelRequest, on_delete=models.CASCADE)
     file_value = models.FileField(upload_to="F854634")
     text_value = models.TextField()
+
+"""
+class ModelPlans(models.Model):
+    model = models.ForeignKey(Model, on_delete=models.CASCADE)
+    request_cost = models.FloatField()
+    free_request = models.IntegerField(blank=True, default=0, null=True)
+    dynamic = models.BooleanField()
+"""

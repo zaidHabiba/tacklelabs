@@ -1,15 +1,17 @@
 import requests
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from app.models.model_institutions import Institution
-from app.models.model_model import API, IOAPI, Model, ModelSubscription
+from app.models.model_institutions import Institution, HospitalJoinRequest
+from app.models.model_model import API, IOAPI, Model, ModelSubscription, ModelImage
 from app.models.model_user import User
 from app.resources import values
 from app.resources.customized_response import Response
 from app.resources.decorators import authentication
-from app.serializers.serializer_model import APISerializer, ModelSerializer, ModelImageSerializer, IOAPISerializer
+from app.serializers.serializer_model import APISerializer, ModelSerializer, ModelImageSerializer, IOAPISerializer, \
+    ModelFetchSerializer, ModelSubscriptionSerializer, ModelSubscriptionFetchSerializer
 
 
 class ModelCore(viewsets.ViewSet):
@@ -108,7 +110,7 @@ class ModelCore(viewsets.ViewSet):
     @authentication()
     def fetch_models(self, request, *args, **kwargs):
         user_id = kwargs["user_id"]
-        search = request.GET["search"]
+        search = request.GET.get("search", "")
         user = User.users.get(id=user_id)
         models = Model.objects.filter(name__contains=search)
         if user.type.type == values.PERMISSION_TYPE_DOCTOR:
@@ -124,7 +126,50 @@ class ModelCore(viewsets.ViewSet):
                     models = Model.objects.filter(name__contains=search, lab_model=True)
 
         response = Response(error_code=status.HTTP_200_OK)
-        response.add_data("models", ModelSerializer(models, many=True).data)
+        response.add_data("models", ModelFetchSerializer(models, many=True).data)
+        return response
+
+    @action(methods="post", url_path="user/<int:user_id>/create_subscription/", detail=False)
+    @authentication()
+    def create_subscription(self, request, *args, **kwargs):
+        request_data = request.data.copy()
+        model_serializer = ModelSubscriptionSerializer(data=request_data)
+        if model_serializer.is_valid():
+            model_instance = model_serializer.save()
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("model", ModelSubscriptionSerializer(model_instance).data)
+            return response
+        else:
+            response = Response(error_code=Response.ERROR_603_DATA_NOT_VALID)
+            return response
+
+    @action(methods="get", url_path="user/<int:user_id>/fetch_model_images/<model_id>", detail=False)
+    @authentication()
+    def fetch_model_images(self, request, *args, **kwargs):
+        model_id = kwargs["model_id"]
+        models = ModelImage.objects.filter(model=model_id)
+        image_model_serializer = ModelImageSerializer(models, many=True)
+        response = Response(error_code=status.HTTP_200_OK)
+        response.add_data("images", image_model_serializer.data)
+        return response
+
+    @action(methods="get", url_path="user/<int:user_id>/fetch_subscription/", detail=False)
+    @authentication()
+    def fetch_subscription(self, request, *args, **kwargs):
+        user_id = kwargs["user_id"]
+        type = User.users.get_user_type(user_id)
+        model_subscriptions = ModelSubscription.objects.filter(user=user_id)
+        response = Response(error_code=status.HTTP_200_OK)
+        response.add_data("model_subscriptions", ModelSubscriptionFetchSerializer(model_subscriptions, many=True).data)
+        if type.type == values.PERMISSION_TYPE_DOCTOR:
+            try:
+                join_request = HospitalJoinRequest.objects.get(doctor=user_id, is_accepted=True)
+                hospital_model_subscriptions = ModelSubscription.objects.filter(
+                    user=join_request.hospital.manager.id)
+                response.add_data("hospital_model_subscriptions",
+                                  ModelSubscriptionFetchSerializer(hospital_model_subscriptions, many=True).data)
+            except ObjectDoesNotExist:
+                pass
         return response
 
 
@@ -134,3 +179,6 @@ create_image_model = ModelCore.as_view(actions={'post': 'create_image_model'})
 create_io_api = ModelCore.as_view(actions={'post': 'create_io_api'})
 send_request = ModelCore.as_view(actions={'post': 'send_request'})
 fetch_models = ModelCore.as_view(actions={'get': 'fetch_models'})
+create_subscription = ModelCore.as_view(actions={'post': 'create_subscription'})
+fetch_model_images = ModelCore.as_view(actions={'get': 'fetch_model_images'})
+fetch_subscription = ModelCore.as_view(actions={'get': 'fetch_subscription'})
