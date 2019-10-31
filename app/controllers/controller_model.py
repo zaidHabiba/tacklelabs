@@ -11,7 +11,8 @@ from app.resources import values
 from app.resources.customized_response import Response
 from app.resources.decorators import authentication
 from app.serializers.serializer_model import APISerializer, ModelSerializer, ModelImageSerializer, IOAPISerializer, \
-    ModelFetchSerializer, ModelSubscriptionSerializer, ModelSubscriptionFetchSerializer
+    ModelFetchSerializer, ModelSubscriptionSerializer, ModelSubscriptionFetchSerializer, ModelRequestSerializer, \
+    IORequestSerializer
 
 
 class ModelCore(viewsets.ViewSet):
@@ -72,38 +73,74 @@ class ModelCore(viewsets.ViewSet):
             response = Response(error_code=Response.ERROR_603_DATA_NOT_VALID)
             return response
 
-    @action(methods="post", url_path="user/<int:user_id>/send_request/<int:api>", detail=False)
+    @action(methods="post", url_path="user/<int:user_id>/send_request/<int:api>/<int:subscription_id>/", detail=False)
     @authentication()
     def send_request(self, request, *args, **kwargs):
         request_data = request.data.copy()
         api_id = kwargs["api"]
+        user_id = kwargs["user_id"]
+        subscription_id = kwargs["subscription_id"]
         api = API.objects.get(pk=api_id)
         model = Model.objects.get(api=api_id)
-        subscriptions = ModelSubscription.objects.filter(model=model.id)
+        subscription = ModelSubscription.objects.get(pk=subscription_id)
+        if subscription.number_of_request - subscription.request_used > 0:
+            subscription.request_used = subscription.request_used + 1
+            subscription.save()
+        else:
+            response = Response(error_code=status.HTTP_400_BAD_REQUEST)
+            return response
+
         input_api = IOAPI.objects.filter(api=api.id, is_input=True)
         output_api = IOAPI.objects.filter(api=api.id, is_input=False)
         data = {}
+        files = {}
         response_from_request = ""
+        model_request = ModelRequestSerializer(data={"model": model.pk, "user": user_id})
+        if model_request.is_valid():
+            model_request = model_request.save()
+        else:
+            response = Response(error_code=status.HTTP_400_BAD_REQUEST)
+            return response
         for field in input_api:
-            data[field.json_name] = request_data[field.json_name]
+            if field.is_file:
+                files[field.json_name] = request_data[field.json_name]
+                io_request = IORequestSerializer(
+                    data={"io": field.pk, "request": model_request.pk, "file_value": request_data[field.json_name]})
+                if io_request.is_valid():
+                    io_request.save()
+            else:
+                data[field.json_name] = request_data[field.json_name]
+                io_request = IORequestSerializer(
+                    data={"io": field.pk, "request": model_request.pk, "text_value": request_data[field.json_name]})
+                if io_request.is_valid():
+                    io_request.save()
         if api.method == "POST":
-            response_from_request = requests.post(api.url, data)
+            response_from_request = requests.post(api.url, files=files, data=data)
         elif api.method == "GET":
-            response_from_request = requests.get(api.url, data)
+            response_from_request = requests.get(api.url, files=files, data=data)
         print(response_from_request.json())
         if response_from_request.status_code != 200:
             response = Response(error_code=status.HTTP_400_BAD_REQUEST)
             return response
         response_back = {}
         for field in output_api:
-            response_back[field.json_name] = response_from_request.json()[field.json_name]
+            if field.is_file:
+                io_request = IORequestSerializer(
+                    data={"io": field.pk, "request": model_request.pk,
+                          "file_value": response_from_request.json()[field.json_name]})
+                if io_request.is_valid():
+                    io_request = io_request.save()
+                    print(io_request.file_value.url)
+                    response_back[field.json_name] = io_request.file_value.url
+            else:
+                response_back[field.json_name] = response_from_request.json()[field.json_name]
+                io_request = IORequestSerializer(
+                    data={"io": field.pk, "request": model_request.pk,
+                          "text_value": response_from_request.json()[field.json_name]})
+                if io_request.is_valid():
+                    io_request.save()
         response = Response(error_code=status.HTTP_200_OK)
         response.add_data("response_back", response_back)
-        for subscription in subscriptions:
-            if subscription.request_numbers > 0:
-                subscription.request_numbers = subscription.request_numbers - 1
-                subscription.save()
-                break
         return response
 
     @action(methods="post", url_path="user/<int:user_id>/fetch_models/", detail=False)
@@ -172,12 +209,24 @@ class ModelCore(viewsets.ViewSet):
                 pass
         return response
 
+    @action(methods="get", url_path="user/<int:user_id>/fetch_io_api/<int:api_id>", detail=False)
+    @authentication()
+    def fetch_io_api(self, request, *args, **kwargs):
+        user_id = kwargs["user_id"]
+        api_id = kwargs["api_id"]
+        ios = IOAPI.objects.filter(api=api_id)
+        response = Response(error_code=status.HTTP_200_OK)
+        response.add_data("ios", IOAPISerializer(ios, many=True).data)
+        return response
+
+
 
 create_api = ModelCore.as_view(actions={'post': 'create_api'})
 create_model = ModelCore.as_view(actions={'post': 'create_model'})
 create_image_model = ModelCore.as_view(actions={'post': 'create_image_model'})
 create_io_api = ModelCore.as_view(actions={'post': 'create_io_api'})
 send_request = ModelCore.as_view(actions={'post': 'send_request'})
+fetch_io_api = ModelCore.as_view(actions={'get': 'fetch_io_api'})
 fetch_models = ModelCore.as_view(actions={'get': 'fetch_models'})
 create_subscription = ModelCore.as_view(actions={'post': 'create_subscription'})
 fetch_model_images = ModelCore.as_view(actions={'get': 'fetch_model_images'})

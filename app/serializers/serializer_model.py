@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-from app.models.model_model import Model, API, IOAPI, ModelImage, ModelSubscription
+from app.models.model_model import Model, API, IOAPI, ModelImage, ModelSubscription, ModelRequest, IORequest
 from app.serializers.serializer_institutions import InstitutionFetchSerializer, InstitutionSimpleFetchSerializer
-from app.serializers.serializer_user import UserFetchSearchSerializer
 
 
 class ModelFetchSerializer(serializers.ModelSerializer):
@@ -56,4 +55,16 @@ class APISerializer(serializers.ModelSerializer):
 class IOAPISerializer(serializers.ModelSerializer):
     class Meta:
         model = IOAPI
+        fields = "__all__"
+
+
+class ModelRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModelRequest
+        fields = "__all__"
+
+
+class IORequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IORequest
         fields = "__all__"

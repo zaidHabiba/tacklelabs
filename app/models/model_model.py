@@ -35,6 +35,7 @@ class Model(models.Model):
     def __str__(self):
         return self.name
 
+
 class ModelSubscription(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     model = models.ForeignKey(Model, on_delete=models.CASCADE, blank=True)
@@ -57,8 +58,9 @@ class ModelRequest(models.Model):
 class IORequest(models.Model):
     io = models.ForeignKey(IOAPI, on_delete=models.CASCADE)
     request = models.ForeignKey(ModelRequest, on_delete=models.CASCADE)
-    file_value = models.FileField(upload_to="F854634")
-    text_value = models.TextField()
+    file_value = models.FileField(upload_to="F854634", blank=True, null=True)
+    text_value = models.TextField(blank=True, null=True)
+
 
 """
 class ModelPlans(models.Model):

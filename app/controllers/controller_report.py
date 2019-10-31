@@ -3,8 +3,10 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
+from app.models.model_institutions import Institution
 from app.models.model_report import ReportHub
 from app.models.model_user import User
+from app.resources import values
 from app.resources.customized_response import Response
 from app.resources.decorators import authentication
 from app.resources.values import USER_ID_REQUEST_URL_NAME
@@ -88,7 +90,7 @@ class UserRegisterCore(viewsets.ViewSet):
             return response
         except ObjectDoesNotExist:
             response = Response(error_code=status.HTTP_200_OK)
-            response.add_data("reports", [])
+            response.add_data("images", [])
             return response
 
     @action(methods="post", url_path="user/<int:user_id>/send_report/", detail=False)
@@ -141,7 +143,37 @@ class UserRegisterCore(viewsets.ViewSet):
             response.add_data("reports", [])
             return response
 
-
+    @action(methods="get", url_path="user/<int:user_id>/fetch_user_reports/", detail=False)
+    @authentication()
+    def fetch_user_reports(self, request, *args, **kwargs):
+        user_id = kwargs["user_id"]
+        type = User.users.get_user_type(user_id)
+        if type.type == values.PERMISSION_TYPE_PATIENT:
+            reports = Report.objects.filter(
+                report_hub_instance__in=ReportHub.objects.filter(receiver=user_id).values("report"))
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("reports", ReportFetchSerializer(reports, many=True).data)
+            return response
+        if type.type == values.PERMISSION_TYPE_SUPERVISOR:
+            try:
+                institution = Institution.objects.get(manager=user_id)
+                if institution.type.type == values.INSTITUTION_LAB_NAME:
+                    reports = Report.objects.filter(lab=institution.id)
+                    response = Response(error_code=status.HTTP_200_OK)
+                    response.add_data("reports", ReportFetchSerializer(reports, many=True).data)
+                    return response
+            except ObjectDoesNotExist:
+                response = Response(error_code=status.HTTP_400_BAD_REQUEST)
+                return response
+        if type.type == values.PERMISSION_TYPE_DOCTOR:
+            reports = Report.objects.filter(
+                report_hub_instance__in=ReportHub.objects.filter(receiver=user_id).values(
+                    "report")) | Report.objects.filter(doctor=user_id)
+            response = Response(error_code=status.HTTP_200_OK)
+            response.add_data("reports", ReportFetchSerializer(reports, many=True).data)
+            return response
+        response = Response(error_code=status.HTTP_400_BAD_REQUEST)
+        return response
 
 
 create_report = UserRegisterCore.as_view(actions={'post': 'create_report'})
@@ -151,3 +183,4 @@ fetch_lab_saved_reports_search = UserRegisterCore.as_view(actions={'get': 'fetch
 send_report = UserRegisterCore.as_view(actions={'post': 'send_report'})
 fetch_reports_hub_by_sender = UserRegisterCore.as_view(actions={'get': 'fetch_reports_hub_by_sender'})
 fetch_doctor_reports = UserRegisterCore.as_view(actions={'get': 'fetch_doctor_reports'})
+fetch_user_reports = UserRegisterCore.as_view(actions={'get': 'fetch_user_reports'})

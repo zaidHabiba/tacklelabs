@@ -8,7 +8,7 @@ from app.models.model_user import User, UserType
 
 @admin.register(Model)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'version', 'api', 'company')
+    list_display = ('id','name', 'version', 'api', 'company')
 
 
 @admin.register(ModelRequest)
@@ -23,12 +23,12 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(API)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('url', 'method')
+    list_display = ('url', 'id', 'method')
 
 
 @admin.register(ModelSubscription)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('user', 'model', 'number_of_request', 'request_used', 'is_free')
+    list_display = ('user', 'id', 'model', 'number_of_request', 'request_used', 'is_free')
 
 
 @admin.register(ModelImage)
