@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 
 from app.models.model_institutions import Institution, HospitalJoinRequest
 from app.models.model_model import API, IOAPI, Model, ModelSubscription, ModelImage
+from app.models.model_report import ReportImage
 from app.models.model_user import User
 from app.resources import values
 from app.resources.customized_response import Response
@@ -82,6 +83,7 @@ class ModelCore(viewsets.ViewSet):
         subscription_id = kwargs["subscription_id"]
         api = API.objects.get(pk=api_id)
         model = Model.objects.get(api=api_id)
+
         subscription = ModelSubscription.objects.get(pk=subscription_id)
         if subscription.number_of_request - subscription.request_used > 0:
             subscription.request_used = subscription.request_used + 1
@@ -96,6 +98,7 @@ class ModelCore(viewsets.ViewSet):
         files = {}
         response_from_request = ""
         model_request = ModelRequestSerializer(data={"model": model.pk, "user": user_id})
+
         if model_request.is_valid():
             model_request = model_request.save()
         else:
@@ -103,17 +106,27 @@ class ModelCore(viewsets.ViewSet):
             return response
         for field in input_api:
             if field.is_file:
-                files[field.json_name] = request_data[field.json_name]
-                io_request = IORequestSerializer(
-                    data={"io": field.pk, "request": model_request.pk, "file_value": request_data[field.json_name]})
-                if io_request.is_valid():
-                    io_request.save()
+                try:
+                    image_id = int(request_data[field.json_name])
+                    report_image = ReportImage.objects.get(id=image_id)
+                    files[field.json_name] = report_image.image
+                    io_request = IORequestSerializer(
+                        data={"io": field.pk, "request": model_request.pk, "file_value": report_image.image})
+                    if io_request.is_valid():
+                        io_request.save()
+                except Exception:
+                    files[field.json_name] = request_data[field.json_name]
+                    io_request = IORequestSerializer(
+                        data={"io": field.pk, "request": model_request.pk, "file_value": request_data[field.json_name]})
+                    if io_request.is_valid():
+                        io_request.save()
             else:
                 data[field.json_name] = request_data[field.json_name]
                 io_request = IORequestSerializer(
                     data={"io": field.pk, "request": model_request.pk, "text_value": request_data[field.json_name]})
                 if io_request.is_valid():
                     io_request.save()
+
         if api.method == "POST":
             response_from_request = requests.post(api.url, files=files, data=data)
         elif api.method == "GET":
@@ -122,15 +135,23 @@ class ModelCore(viewsets.ViewSet):
         if response_from_request.status_code != 200:
             response = Response(error_code=status.HTTP_400_BAD_REQUEST)
             return response
+
         response_back = {}
         for field in output_api:
             if field.is_file:
+                if "http" in response_from_request.json()[field.json_name]:
+                    io_request = IORequestSerializer(
+                        data={"io": field.pk, "request": model_request.pk,
+                              "text_value": response_from_request.json()[field.json_name]})
+                    if io_request.is_valid():
+                        io_request = io_request.save()
+                        response_back[field.json_name] = io_request.text_value
+
                 io_request = IORequestSerializer(
                     data={"io": field.pk, "request": model_request.pk,
                           "file_value": response_from_request.json()[field.json_name]})
                 if io_request.is_valid():
                     io_request = io_request.save()
-                    print(io_request.file_value.url)
                     response_back[field.json_name] = io_request.file_value.url
             else:
                 response_back[field.json_name] = response_from_request.json()[field.json_name]
@@ -139,6 +160,7 @@ class ModelCore(viewsets.ViewSet):
                           "text_value": response_from_request.json()[field.json_name]})
                 if io_request.is_valid():
                     io_request.save()
+
         response = Response(error_code=status.HTTP_200_OK)
         response.add_data("response_back", response_back)
         return response
@@ -218,7 +240,6 @@ class ModelCore(viewsets.ViewSet):
         response = Response(error_code=status.HTTP_200_OK)
         response.add_data("ios", IOAPISerializer(ios, many=True).data)
         return response
-
 
 
 create_api = ModelCore.as_view(actions={'post': 'create_api'})

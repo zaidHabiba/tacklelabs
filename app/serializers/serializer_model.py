@@ -13,7 +13,6 @@ class ModelFetchSerializer(serializers.ModelSerializer):
 
 
 class ModelSimpleFetchSerializer(serializers.ModelSerializer):
-    company = InstitutionSimpleFetchSerializer()
 
     class Meta:
         model = Model
