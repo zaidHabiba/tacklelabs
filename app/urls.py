@@ -2,7 +2,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from app.controllers.controller_user import user_login, user_logout, user_signup, user_update, user_update_password, get_send_users, get_patients, get_send_users_patients
+from app.controllers.controller_user import user_login, user_logout, register_guest, user_signup, user_update, user_update_password, get_send_users, get_patients, get_send_users_patients
 from app.controllers.controller_institutions import create_hospital,create_lab,create_software_company, \
     update_institution,fetch_institution, fetch_hospitals, hospital_join_request, search_hospitals,cancel_join_request
 from settings import local
@@ -46,4 +46,5 @@ urlpatterns = [
     path("user/<int:user_id>/fetch_subscription/", fetch_subscription),
     path("user/<int:user_id>/fetch_user_reports/", fetch_user_reports),
     path("user/<int:user_id>/fetch_io_api/<int:api_id>", fetch_io_api),
+    path('register/guest/', register_guest),
 ] + static(local.MEDIA_URL, document_root=local.MEDIA_ROOT)

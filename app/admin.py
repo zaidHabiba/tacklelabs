@@ -3,12 +3,17 @@ from django.contrib import admin
 from app.models.model_institutions import Institution, InstitutionType, HospitalJoinRequest
 from app.models.model_model import ModelSubscription, ModelImage, IOAPI, IORequest, API, Model, ModelRequest
 from app.models.model_report import ReportImage, Report, ReportHub
-from app.models.model_user import User, UserType
+from app.models.model_user import User, UserType, Counters
+
+
+@admin.register(Counters)
+class CounterAdmin(admin.ModelAdmin):
+    list_display = ('name', 'count', 'id')
 
 
 @admin.register(Model)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'version', 'api', 'company')
+    list_display = ('id', 'name', 'version', 'api', 'company')
 
 
 @admin.register(ModelRequest)

@@ -142,3 +142,8 @@ class User(models.Model):
         if self.code is None:
             self.code = generate_id(6)
         super(User, self).save(*args, **kwargs)
+
+
+class Counters(models.Model):
+    name = models.CharField(max_length=64)
+    count = models.IntegerField(default=0, blank=True)

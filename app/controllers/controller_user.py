@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
-from app.models.model_user import User
+from app.models.model_user import User, Counters
 from app.resources import values
 from app.resources.customized_response import Response
 from app.resources.decorators import validation_parameters, authentication, validation_data
@@ -254,6 +254,14 @@ class UserRegisterCore(viewsets.ViewSet):
         response.add_data("users", final_data)
         return response
 
+    @action(methods="post", url_path="register/guest/", detail=False)
+    def register_guest(self, request, *args, **kwargs):
+        counter = Counters.objects.get(name="guest")
+        counter.count = counter.count + 1
+        counter.save()
+        response = Response(error_code=status.HTTP_200_OK)
+        return response
+
 
 user_login = UserRegisterCore.as_view(actions={'post': 'user_login'})
 user_logout = UserRegisterCore.as_view(actions={'post': 'user_logout'})
@@ -263,3 +271,4 @@ user_update_password = UserRegisterCore.as_view(actions={'put': 'user_update_pas
 get_send_users = UserRegisterCore.as_view(actions={'get': 'get_send_users'})
 get_patients = UserRegisterCore.as_view(actions={'get': 'get_patients'})
 get_send_users_patients = UserRegisterCore.as_view(actions={'get': 'get_send_users_patients'})
+register_guest = UserRegisterCore.as_view(actions={'post': 'register_guest'})
