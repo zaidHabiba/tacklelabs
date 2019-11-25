@@ -68,7 +68,7 @@ class UserRegisterCore(viewsets.ViewSet):
                       | User.patients.filter(second_name__contains=search) \
                       | User.patients.filter(middle_name__contains=search) \
                       | User.patients.filter(last_name__contains=search)
-            reports = Report.objects.filter(lab=lab_id).filter(patient__in=patient)
+            reports = Report.objects.filter(lab=lab_id).filter(patient__in=patient).order_by('-create_date')
             reports_serializer = ReportFetchSerializer(reports, many=True)
             response = Response(error_code=status.HTTP_200_OK)
             response.add_data("reports", reports_serializer.data)
@@ -113,7 +113,7 @@ class UserRegisterCore(viewsets.ViewSet):
     def fetch_reports_hub_by_sender(self, request, *args, **kwargs):
         try:
             user_id = kwargs[USER_ID_REQUEST_URL_NAME]
-            reports = ReportHub.objects.filter(receiver=user_id)
+            reports = ReportHub.objects.filter(receiver=user_id).order_by('-send_date')
             reports_serializer = ReportHubFetchSerializer(reports, many=True)
             response = Response(error_code=status.HTTP_200_OK)
             response.add_data("reports", reports_serializer.data)
@@ -133,7 +133,7 @@ class UserRegisterCore(viewsets.ViewSet):
                       | User.patients.filter(second_name__contains=search) \
                       | User.patients.filter(middle_name__contains=search) \
                       | User.patients.filter(last_name__contains=search)
-            reports = Report.objects.filter(doctor=doctor_id).filter(patient__in=patient)
+            reports = Report.objects.filter(doctor=doctor_id).filter(patient__in=patient).order_by('-create_date')
             reports_serializer = ReportFetchSerializer(reports, many=True)
             response = Response(error_code=status.HTTP_200_OK)
             response.add_data("reports", reports_serializer.data)
@@ -150,7 +150,7 @@ class UserRegisterCore(viewsets.ViewSet):
         type = User.users.get_user_type(user_id)
         if type.type == values.PERMISSION_TYPE_PATIENT:
             reports = Report.objects.filter(
-                report_hub_instance__in=ReportHub.objects.filter(receiver=user_id).values("report"))
+                report_hub_instance__in=ReportHub.objects.filter(receiver=user_id).values("report")).order_by('-send_date')
             response = Response(error_code=status.HTTP_200_OK)
             response.add_data("reports", ReportFetchSerializer(reports, many=True).data)
             return response
@@ -158,7 +158,7 @@ class UserRegisterCore(viewsets.ViewSet):
             try:
                 institution = Institution.objects.get(manager=user_id)
                 if institution.type.type == values.INSTITUTION_LAB_NAME:
-                    reports = Report.objects.filter(lab=institution.id)
+                    reports = Report.objects.filter(lab=institution.id).order_by('-create_date')
                     response = Response(error_code=status.HTTP_200_OK)
                     response.add_data("reports", ReportFetchSerializer(reports, many=True).data)
                     return response
