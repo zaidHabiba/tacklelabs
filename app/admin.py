@@ -68,7 +68,7 @@ class InstitutionTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Report)
 class ReportAdmin(admin.ModelAdmin):
-    list_display = ('id', 'patient')
+    list_display = ('id', 'patient', 'title', 'description', 'serial_numbers')
 
 
 @admin.register(ReportHub)
@@ -80,5 +80,7 @@ class ReportHubAdmin(admin.ModelAdmin):
 class ReportHubAdmin(admin.ModelAdmin):
     list_display = ('id', 'doctor', 'hospital', 'is_accepted', 'send_date')
 
+@admin.register(ReportImage)
+class CounterAdmin(admin.ModelAdmin):
+    list_display = ('id','report')
 
-admin.site.register(ReportImage)

@@ -12,7 +12,7 @@ ALLOWED_HOSTS = [
     'http://localhost:3000'
 ]
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ORIGIN_ALLOW_ALL = True
 Access_Control_Allow_Credentials = True
 
 CORS_ORIGIN_WHITELIST = (

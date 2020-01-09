@@ -29,7 +29,7 @@ class Report(models.Model):
         if self.serial_numbers is None:
             self.serial_numbers = generate_id(8)
         super(Report, self).save(*args, **kwargs)
-
+    
 
 class ReportImage(models.Model):
     report = models.ForeignKey(Report, on_delete=models.DO_NOTHING)
